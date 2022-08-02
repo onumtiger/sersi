@@ -1,4 +1,5 @@
 from env import *
+import json
 import urllib3
 http = urllib3.PoolManager()
 
@@ -16,6 +17,22 @@ wartenachricht = "Es wurde noch kein Datum bekannt gegeben..."
 paulaner_website_response = http.request('GET', paulaner_wiesntisch_url)
 paulaner_website_inhalt = paulaner_website_response.data.decode("utf-8")
 
+# whatsapp request data
+data = {"messaging_product": "whatsapp", "to": f"{phone_number}", "type": "template",
+        "template": {"name": f"{template_name}", "language": {"code": "de"}}}
+encoded_data = json.dumps(data).encode('utf-8')
+
+
 if wartemeldung not in paulaner_website_inhalt:
     http.request('GET', einzelchat_url+einkaufsnachricht)
     http.request('GET', gruppenchat_url+einkaufsnachricht)
+    http.request(
+        'POST',
+        f'https://graph.facebook.com/v14.0/{whatsapp_id}/messages',
+        body=encoded_data,
+        headers={
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {whatsapp_token}'
+        }
+
+    )
