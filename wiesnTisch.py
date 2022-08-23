@@ -17,13 +17,16 @@ wartenachricht = "Es wurde noch kein Datum bekannt gegeben..."
 paulaner_website_response = http.request('GET', paulaner_wiesntisch_url)
 paulaner_website_inhalt = paulaner_website_response.data.decode("utf-8")
 
-# whatsapp request data
+
+#whatsapp request data
 data = {"messaging_product": "whatsapp", "to": f"{phone_number}", "type": "template",
         "template": {"name": f"{template_name}", "language": {"code": "de"}}}
 encoded_data = json.dumps(data).encode('utf-8')
 
-
-if wartemeldung not in paulaner_website_inhalt:
+if paulaner_website_inhalt == "":
+    pass
+ 
+elif wartemeldung not in paulaner_website_inhalt:
     http.request('GET', einzelchat_url+einkaufsnachricht)
     http.request('GET', gruppenchat_url+einkaufsnachricht)
     http.request(
